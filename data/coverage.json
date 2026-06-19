@@ -1,8 +1,231 @@
 {
-  "name": "iPurple.team Windows Coverage",
-  "description": "Posts published on iPurple.team mapped to MITRE ATT&CK (Windows Enterprise).",
+  "name": "iPurple.team Windows Layer",
+  "versions": {
+    "layer": "4.5",
+    "navigator": "iPurple.team-1.0",
+    "attack": "19.1"
+  },
   "domain": "enterprise-attack",
+  "description": "Purple-team coverage layer for Windows Enterprise ATT&CK",
   "platform": "Windows",
-  "techniques": [],
-  "customTechniques": []
+  "gradient": {
+    "colors": [
+      "#e53935",
+      "#fb8c00",
+      "#43a047"
+    ],
+    "minValue": 0,
+    "maxValue": 100
+  },
+  "techniques": [
+    {
+      "techniqueID": "T1685.009",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "Bind Link - EDR Tampering",
+          "url": "https://ipurple.team/2025/12/01/bind-link-edr-tampering/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1685.008",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "AppLocker Rules Abuse",
+          "url": "https://ipurple.team/2026/02/02/applocker-rules-abuse/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1685.007",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "QoS Policies",
+          "url": "https://ipurple.team/2026/06/17/qos-policies/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1685"
+    },
+    {
+      "techniqueID": "T1686.003",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "EDR Silencing",
+          "url": "https://ipurple.team/2026/01/12/edr-silencing/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1055.016",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "EntryPoint Hijacking",
+          "url": "https://ipurple.team/2026/05/13/entrypoint-hijacking/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1218.016",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "WinGet",
+          "url": "https://ipurple.team/2026/06/09/winget/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1204.001",
+      "status": "partial",
+      "score": 50,
+      "color": "#7c3aed",
+      "links": [
+        {
+          "label": "Toast Notifications",
+          "url": "https://ipurple.team/2026/03/25/toast-notifications/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1574.001",
+      "status": "partial",
+      "score": 50,
+      "color": "#7c3aed",
+      "links": [
+        {
+          "label": "GAC Hijacking",
+          "url": "https://ipurple.team/2026/02/10/gac-hijacking/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1021.003",
+      "status": "partial",
+      "score": 50,
+      "color": "#7c3aed",
+      "links": [
+        {
+          "label": "Cross-Session Activation",
+          "url": "https://ipurple.team/2026/05/04/cross-session-activation/"
+        },
+        {
+          "label": "BitLocker",
+          "url": "https://ipurple.team/2025/08/04/lateral-movement-bitlocker/"
+        },
+        {
+          "label": "Microsoft Speech",
+          "url": "https://ipurple.team/2026/04/07/microsoft-speech/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1003.001",
+      "status": "partial",
+      "score": 50,
+      "color": "#7c3aed",
+      "links": [
+        {
+          "label": "Windows Error Reporting",
+          "url": "https://ipurple.team/2025/11/18/lsass-dump-windows-error-reporting/"
+        }
+      ]
+    }
+  ],
+  "customTechniques": [
+    {
+      "id": "T1685.007",
+      "name": "QoS Policies",
+      "tactics": [
+        "defense-impairment"
+      ],
+      "isSubtechnique": true,
+      "parent": "T1685",
+      "platforms": [
+        "Windows"
+      ],
+      "url": "",
+      "description": "In Windows, a Quality of Service (QoS) policy is a rule that handles outbound network traffic. Specifically, it is used to cap the outbound bandwidth of a process, port, or protocol. Organizations can configure QoS policies through Group Policies, MDM, or PowerShell. Threat actors with elevated privileges on the asset can point a QoS policy at an EDR agent and set the rate to effectively zero, limiting the capability of the agent to generate telemetry in the cloud console.",
+      "custom": true
+    },
+    {
+      "id": "T1685.008",
+      "name": "AppLocker",
+      "tactics": [
+        "defense-impairment"
+      ],
+      "isSubtechnique": true,
+      "parent": "T1685",
+      "platforms": [
+        "Windows"
+      ],
+      "url": "",
+      "description": "AppLocker can reduce the attack surface by enforcing rules that allow only trusted executions. As a result, malicious code is prevented from running. It should be noted that AppLocker is not enabled by default and requires a solid understanding of the environment and user behaviour prior to any implementation. Threat actors could abuse AppLocker to deploy rules that will prevent EDR processes from execution in order to execute arbitrary commands and software on the asset without EDR disruption.",
+      "custom": true
+    },
+    {
+      "id": "T1685.009",
+      "name": "Folder Redirection",
+      "tactics": [
+        "defense-impairment"
+      ],
+      "isSubtechnique": true,
+      "parent": "T1685",
+      "platforms": [
+        "Windows"
+      ],
+      "url": "",
+      "description": "The Bind Link API enables Administrators to create transparent mappings from a virtual path to a backing path (local or remote). The Bind Link feature was introduced in Windows 11, and according to Microsoft, it should be used to improve application compatibility by making files stored in a network share appear as local, or in scenarios where an application requires files from a different location to appear in a new location without copying the files. It is possible to abuse the feature of bind links to force the redirection of the folder containing the EDR files to a folder that a threat actor has write access to perform evasion.",
+      "custom": true
+    },
+    {
+      "id": "T1055.016",
+      "name": "EntryPoint Hijacking",
+      "tactics": [
+        "stealth",
+        "privilege-escalation"
+      ],
+      "isSubtechnique": true,
+      "parent": "T1055",
+      "platforms": [
+        "Windows"
+      ],
+      "url": "",
+      "description": "The technique of EntryPoint Hijacking introduces a stealthier approach to code injection, as it doesn’t rely on API calls that create a new thread within the process context, and it is independent of the attack chain. Arbitrary code is written to memory, but it executes only when the process legitimately creates a new thread. This enables threat actors to evade EDR defenses and extend their dwell time within the environment.",
+      "custom": true
+    },
+    {
+      "id": "T1218.016",
+      "name": "WinGet",
+      "tactics": [
+        "stealth"
+      ],
+      "isSubtechnique": true,
+      "parent": "T1218",
+      "platforms": [
+        "Windows"
+      ],
+      "url": "",
+      "description": "WinGet, also known as Windows Package Manager, is Microsoft’s command-line for discovering, installing, upgrading, configuring, and removing applications on Windows. It is commonly used by Administrators and developers to automate software deployment and system setup. However, it can be abused to proxy execution and evade detection. Threat actors can execute arbitrary PowerShell scripts in the form of YAML files without invoking standard PowerShell processes, which endpoint detection and response technologies heavily monitor.",
+      "custom": true
+    }
+  ]
 }
