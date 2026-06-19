@@ -6,6 +6,16 @@
  * ========================================================================== */
 
 window.IPURPLE_CONFIG = {
+  /* ---- Edit vs. read-only ---------------------------------------------
+   * Editing (marking techniques, adding, switching colors) is enabled
+   * automatically ONLY when you run locally (localhost / file://). On the
+   * published site visitors get a read-only view of data/coverage.json —
+   * they cannot change status, colors, or add techniques.
+   * To force a mode regardless of host, uncomment one of these:
+   * -------------------------------------------------------------------- */
+  // editable: true,   // always allow editing (e.g. an internal mirror)
+  // editable: false,  // always read-only
+
   /* ---- Branding -------------------------------------------------------- */
   brand: {
     name: "iPurple.team",
@@ -84,8 +94,8 @@ window.IPURPLE_CONFIG = {
       label: "Layer",
       items: [
         { label: "Add technique / sub-technique", action: "addTechnique" },
-        { label: "Export layer (JSON)", action: "export" },
-        { label: "Import layer (JSON)", action: "import" },
+        { label: "Save coverage.json (publish)", action: "export" },
+        { label: "Import coverage / layer", action: "import" },
         { label: "Clear all progress",  action: "clear" },
       ],
     },

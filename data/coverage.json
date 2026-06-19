@@ -1,0 +1,8 @@
+{
+  "name": "iPurple.team Windows Coverage",
+  "description": "Posts published on iPurple.team mapped to MITRE ATT&CK (Windows Enterprise).",
+  "domain": "enterprise-attack",
+  "platform": "Windows",
+  "techniques": [],
+  "customTechniques": []
+}

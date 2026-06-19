@@ -8,6 +8,20 @@
   const CONFIG = window.IPURPLE_CONFIG;
   const STORAGE_KEY = CONFIG.layer.storageKey;
 
+  // Edit mode is enabled ONLY when running locally (localhost / file://). On the
+  // published site the Navigator is read-only: visitors see the committed
+  // coverage (data/coverage.json) but cannot change status, colors, or add
+  // techniques. Set CONFIG.editable = true/false to force a mode.
+  const EDIT = (() => {
+    if (typeof CONFIG.editable === "boolean") return CONFIG.editable;
+    const h = location.hostname;
+    return h === "localhost" || h === "127.0.0.1" || h === "::1" || h === "" ||
+           location.protocol === "file:";
+  })();
+  // mutating-menu actions hidden from visitors
+  const EDIT_ACTIONS = new Set(
+    ["addTechnique", "import", "export", "clear", "selectAll", "deselectAll"]);
+
   // small link/chain glyph used on cells and buttons
   const LINK_ICON =
     `<svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true"><path fill="currentColor" d="M3.9 12a3.1 3.1 0 0 1 3.1-3.1h4V7h-4a5 5 0 0 0 0 10h4v-1.9h-4A3.1 3.1 0 0 1 3.9 12zm5.1 1h6v-2H9v2zm5-6h-4v1.9h4a3.1 3.1 0 0 1 0 6.2h-4V17h4a5 5 0 0 0 0-10z"/></svg>`;
@@ -86,6 +100,7 @@
     return [...(p.stops || [])].sort((a, b) => a.score - b.score);
   }
   function persistPalette() {
+    if (!EDIT) return;
     try { localStorage.setItem(PALETTE_KEY, state.palette); } catch (e) { /* ignore */ }
   }
   function restorePalette() {
@@ -150,7 +165,7 @@
     const stops = activeStops();
     const grad = stops.map((s) => `${s.color} ${s.score}%`).join(", ");
     const palettes = getPalettes();
-    const showSwitcher = Object.keys(palettes).length > 1;
+    const showSwitcher = EDIT && Object.keys(palettes).length > 1;  // colors fixed for visitors
     const opts = Object.entries(palettes)
       .map(([k, p]) => `<option value="${k}" ${k === state.palette ? "selected" : ""}>${escapeHtml(p.label || k)}</option>`)
       .join("");
@@ -171,6 +186,11 @@
     const host = document.getElementById("menus");
     host.innerHTML = "";
     (CONFIG.menus || []).forEach((menu, mi) => {
+      // drop mutating items for read-only visitors; skip menu if it empties out
+      const items = (menu.items || []).filter(
+        (item) => EDIT || !(item.action && EDIT_ACTIONS.has(item.action)));
+      if (!items.length) return;
+
       const wrap = document.createElement("div");
       wrap.className = "menu";
       const btn = document.createElement("button");
@@ -184,7 +204,7 @@
       });
       const dd = document.createElement("div");
       dd.className = "menu-dropdown";
-      (menu.items || []).forEach((item) => {
+      items.forEach((item) => {
         const el = document.createElement("div");
         el.className = "menu-item";
         if (item.href) {
@@ -267,6 +287,7 @@
   }
 
   function persistCustom() {
+    if (!EDIT) return;
     try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(state.custom)); }
     catch (e) { /* ignore */ }
   }
@@ -490,6 +511,7 @@
   function overallCompletion() { return summarize(allLeaves()); }
 
   function setStatus(id, status) {
+    if (!EDIT) return;
     const st = { ...(state.layer.techniques[id] || {}) };
     delete st.done;  // drop any legacy flag
     if (status === "partial" || status === "done") st.status = status;
@@ -585,9 +607,59 @@
   /* ====================================================================== *
    *  TECHNIQUE POPOVER (editor)
    * ====================================================================== */
+  function positionPopover(pop, anchorEl) {
+    const r = anchorEl.getBoundingClientRect();
+    const pw = 340, ph = pop.offsetHeight;
+    let left = r.right + 10;
+    if (left + pw > window.innerWidth - 12) left = Math.max(12, r.left - pw - 10);
+    let top = r.top;
+    if (top + ph > window.innerHeight - 12) top = Math.max(12, window.innerHeight - ph - 12);
+    pop.style.left = left + "px";
+    pop.style.top = top + "px";
+  }
+
+  // Read-only popover for visitors: status, description, and clickable
+  // iPurple article links — no editing controls.
+  function openReadonlyPopover(tech, anchorEl) {
+    state.activeTechId = tech.id;
+    const st = cellState(tech.id);
+    const pop = document.getElementById("popover");
+    const backdrop = document.getElementById("popoverBackdrop");
+    const comp = techCompletion(tech);
+    const statusLabel = comp.leaf
+      ? (comp.status === "done" ? "Completed" : comp.status === "partial" ? "Partial" : "Not started")
+      : `${comp.pct}% complete`;
+    const statusColor = comp.leaf
+      ? (comp.status === "done" ? scoreColor(100)
+         : comp.status === "partial" ? CONFIG.heatmap.partial : CONFIG.heatmap.unscored)
+      : (comp.pct > 0 ? scoreColor(comp.pct) : CONFIG.heatmap.unscored);
+    const links = Array.isArray(st.links) ? st.links : [];
+    const linksHtml = links.length
+      ? links.map((l) => `<a class="link-anchor" href="${escapeHtml(normalizeUrl(l.url))}" target="_blank" rel="noopener" title="${escapeHtml(normalizeUrl(l.url))}">${LINK_ICON}<span>${escapeHtml(l.label || l.url)}</span></a>`).join("")
+      : `<div class="links-empty">No iPurple articles mapped yet.</div>`;
+
+    pop.innerHTML = `
+      <h3>${escapeHtml(tech.name)}</h3>
+      <div class="pop-id">${escapeHtml(tech.id)}${tech.isSubtechnique ? " · sub-technique" : ""}</div>
+      <div class="ro-status"><span class="ro-dot" style="background:${statusColor}"></span>${statusLabel}</div>
+      <div class="pop-desc ro-desc">${escapeHtml(effectiveDescription(tech) || "No description.")}</div>
+      <div class="pop-section-label">${LINK_ICON} iPurple article${links.length === 1 ? "" : "s"}</div>
+      <div class="ro-links">${linksHtml}</div>
+      <div class="pop-actions" style="justify-content:space-between;margin-top:14px">
+        <a class="pop-link" href="${tech.url || "https://attack.mitre.org"}" target="_blank" rel="noopener">View on ATT&CK ↗</a>
+        <button class="btn btn-primary btn-sm" id="roClose" type="button">Close</button>
+      </div>`;
+    pop.hidden = false;
+    backdrop.hidden = false;
+    positionPopover(pop, anchorEl);
+    pop.querySelector("#roClose").addEventListener("click", closePopover);
+    backdrop.addEventListener("click", closePopover, { once: true });
+  }
+
   function openPopover(id, anchorEl) {
     const tech = state.techById.get(id);
     if (!tech) return;
+    if (!EDIT) { openReadonlyPopover(tech, anchorEl); return; }
     state.activeTechId = id;
     const st = cellState(id);
     const pop = document.getElementById("popover");
@@ -638,14 +710,7 @@
     // position near the clicked cell
     pop.hidden = false;
     backdrop.hidden = false;
-    const r = anchorEl.getBoundingClientRect();
-    const pw = 340, ph = pop.offsetHeight;
-    let left = r.right + 10;
-    if (left + pw > window.innerWidth - 12) left = Math.max(12, r.left - pw - 10);
-    let top = r.top;
-    if (top + ph > window.innerHeight - 12) top = Math.max(12, window.innerHeight - ph - 12);
-    pop.style.left = left + "px";
-    pop.style.top = top + "px";
+    positionPopover(pop, anchorEl);
 
     // --- wire controls ---
     let working = {
@@ -1200,61 +1265,72 @@
     const blob = new Blob([JSON.stringify(layer, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    const safe = (state.layer.name || "layer").replace(/[^\w.-]+/g, "_");
     a.href = url;
-    a.download = `${safe}.json`;
+    a.download = "coverage.json";   // drop into data/coverage.json and commit to publish
     a.click();
     URL.revokeObjectURL(url);
-    toast(`Exported ${techniques.length} techniques`);
+    toast(`Saved coverage.json (${techniques.length} techniques) → put it in data/ and commit`);
+  }
+
+  // Apply a parsed layer/coverage object into state (custom techniques +
+  // per-technique status/notes/desc/articles). Returns the technique count.
+  function applyLayerObject(obj) {
+    if (!obj || !Array.isArray(obj.techniques)) throw new Error("No techniques array");
+
+    // custom techniques first, indexed via applyCustom, so their ids resolve below
+    state.custom = Array.isArray(obj.customTechniques)
+      ? obj.customTechniques.filter((t) => t && t.id && t.name).map((t) => ({ ...t, custom: true }))
+      : [];
+    applyCustom();
+
+    const next = {};
+    for (const t of obj.techniques) {
+      const id = t.techniqueID || t.id;
+      if (!id || !state.techById.has(id)) continue;
+      const st = {};
+      // status from flag, or migrate older score layers (>=100 done, >0 partial)
+      if (t.status === "done" || t.status === "partial") st.status = t.status;
+      else if (t.done === true) st.status = "done";
+      else if (t.score != null) {
+        if (t.score >= 100) st.status = "done";
+        else if (t.score > 0) st.status = "partial";
+      }
+      if (t.comment) st.note = t.comment;
+      else if (t.note) st.note = t.note;
+      if (t.enabled === false) st.enabled = false;
+      if (t.description != null) st.desc = t.description;  // edited description
+      if (Array.isArray(t.links) && t.links.length) {     // iPurple articles
+        st.links = t.links
+          .filter((l) => l && l.url)
+          .map((l) => ({ label: l.label || l.url, url: l.url }));
+      }
+      if (Object.keys(st).length) next[id] = st;
+    }
+    state.layer.techniques = next;
+    if (obj.name) state.layer.name = obj.name;
+    if (obj.description) state.layer.description = obj.description;
+    return Object.keys(next).length;
+  }
+
+  // Load the committed published coverage (the source of truth for visitors).
+  async function loadCoverage() {
+    try {
+      const res = await fetch("data/coverage.json", { cache: "no-cache" });
+      if (!res.ok) return;            // none published yet -> everything "not started"
+      applyLayerObject(await res.json());
+    } catch (e) { /* no coverage file */ }
   }
 
   function importLayer(file) {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const obj = JSON.parse(reader.result);
-        if (!Array.isArray(obj.techniques)) throw new Error("No techniques array");
-
-        // restore any custom (user-defined) techniques first, so their scores
-        // and the matrix render correctly below
-        if (Array.isArray(obj.customTechniques)) {
-          state.custom = obj.customTechniques
-            .filter((t) => t && t.id && t.name)
-            .map((t) => ({ ...t, custom: true }));
-          persistCustom();
-          applyCustom();
-        }
-
-        const next = {};
-        for (const t of obj.techniques) {
-          const id = t.techniqueID || t.id;
-          if (!id || !state.techById.has(id)) continue;
-          const st = {};
-          // status from flag, or migrate older score layers (>=100 done, >0 partial)
-          if (t.status === "done" || t.status === "partial") st.status = t.status;
-          else if (t.done === true) st.status = "done";
-          else if (t.score != null) {
-            if (t.score >= 100) st.status = "done";
-            else if (t.score > 0) st.status = "partial";
-          }
-          if (t.comment) st.note = t.comment;
-          else if (t.note) st.note = t.note;
-          if (t.enabled === false) st.enabled = false;
-          if (t.description != null) st.desc = t.description;  // edited description
-          if (Array.isArray(t.links) && t.links.length) {     // iPurple articles
-            st.links = t.links
-              .filter((l) => l && l.url)
-              .map((l) => ({ label: l.label || l.url, url: l.url }));
-          }
-          if (Object.keys(st).length) next[id] = st;
-        }
-        state.layer.techniques = next;
-        if (obj.name) state.layer.name = obj.name;
-        if (obj.description) state.layer.description = obj.description;
+        const n = applyLayerObject(JSON.parse(reader.result));
         persist();
-        renderMatrix();   // re-render in case custom techniques were added
+        persistCustom();
+        renderMatrix();
         renderStatus();
-        toast(`Imported ${Object.keys(next).length} techniques`);
+        toast(`Imported ${n} techniques`);
       } catch (e) {
         alert("Could not import layer: " + e.message);
       }
@@ -1266,6 +1342,7 @@
    *  PERSISTENCE
    * ====================================================================== */
   function persist() {
+    if (!EDIT) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state.layer));
     } catch (e) { /* storage full or disabled */ }
@@ -1322,11 +1399,11 @@
       </ul>
       <h3>Search</h3>
       <ul><li>Search by name, technique ID (e.g. <code>T1059</code>), or description text. Matches are highlighted; non-matches dim.</li></ul>
-      <h3>Layers</h3>
+      <h3>Publishing (edit locally, read-only for visitors)</h3>
       <ul>
-        <li>Your work auto-saves in this browser.</li>
-        <li><em>Layer → Export</em> downloads a JSON layer (gradient + scores + comments).</li>
-        <li><em>Layer → Import</em> loads a JSON layer back.</li>
+        <li>Editing is available only when you run this <strong>locally</strong> (localhost). The published site is read-only — visitors see your coverage and can click through to the iPurple articles, but can't change anything.</li>
+        <li>Work locally, then <em>Layer → Save coverage.json</em>, drop the file into <code>data/coverage.json</code>, and <code>git commit</code> + <code>git push</code>.</li>
+        <li>That committed file is the single source of truth everyone sees.</li>
       </ul>
       <h3>Customizing</h3>
       <ul>
@@ -1375,11 +1452,13 @@
    *  BOOT
    * ====================================================================== */
   async function boot() {
-    // resolve active heatmap palette (saved choice → config default → first)
-    const saved = restorePalette();
-    state.palette = (saved && getPalettes()[saved])
-      ? saved
-      : (getPalettes()[CONFIG.heatmap.active] ? CONFIG.heatmap.active : paletteKeys()[0]);
+    document.body.classList.toggle("read-only", !EDIT);
+
+    // heatmap palette: visitors get the fixed config default; locally you may
+    // switch (remembered). Colors are static for the published site.
+    const fixed = getPalettes()[CONFIG.heatmap.active] ? CONFIG.heatmap.active : paletteKeys()[0];
+    const saved = EDIT ? restorePalette() : null;
+    state.palette = (saved && getPalettes()[saved]) ? saved : fixed;
 
     applyTheme();
     renderBrand();
@@ -1399,14 +1478,27 @@
     }
 
     state.baseTechniques = state.data.techniques.slice();
-    restore();
-    restoreCustom();
-    applyCustom();          // compose base + custom, then index
+    applyCustom();           // index base so coverage ids resolve
+    await loadCoverage();    // committed published coverage = source of truth
+    if (EDIT) {              // overlay your local working copy, if any
+      restore();
+      restoreCustom();
+    }
+    applyCustom();           // re-compose with final custom set
     renderMatrix();
     renderStatus();
 
-    // add custom technique
-    document.getElementById("addTechBtn").addEventListener("click", () => openTechForm());
+    // add custom technique (edit mode only)
+    const addBtn = document.getElementById("addTechBtn");
+    if (EDIT) {
+      addBtn.addEventListener("click", () => openTechForm());
+      document.getElementById("importFile").addEventListener("change", (e) => {
+        if (e.target.files[0]) importLayer(e.target.files[0]);
+        e.target.value = "";
+      });
+    } else {
+      addBtn.style.display = "none";
+    }
 
     // search
     const searchInput = document.getElementById("searchInput");
@@ -1415,12 +1507,6 @@
       searchInput.value = "";
       runSearch("");
       searchInput.focus();
-    });
-
-    // import
-    document.getElementById("importFile").addEventListener("change", (e) => {
-      if (e.target.files[0]) importLayer(e.target.files[0]);
-      e.target.value = "";
     });
 
     // keyboard

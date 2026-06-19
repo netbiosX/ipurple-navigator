@@ -64,6 +64,34 @@ python -m http.server 8000
 Prefer no Actions? Just commit `data/attack-windows.json` and point Pages at the
 branch root — every file here is static.
 
+## Publishing your coverage (read-only for visitors)
+
+The Navigator is a **published reflection** of the posts on iPurple.team mapped
+to MITRE — visitors all see the same thing and cannot change it.
+
+- **Editing is enabled only locally** (`localhost` / `file://`). On the deployed
+  site it is **read-only**: no adding techniques, no status changes, no palette
+  switching. Visitors can still search, expand sub-techniques, and click a
+  technique to read its description and open the mapped iPurple article links.
+- The published coverage lives in **`data/coverage.json`** — the single source of
+  truth. Your browser's local edits never affect it.
+
+**Workflow to update what visitors see:**
+
+1. Run locally: `python -m http.server 8000` → open `http://localhost:8000`.
+2. Mark techniques (Not started / Partial / Completed) and map iPurple articles.
+3. **Layer → Save coverage.json**, then move the downloaded file to
+   `data/coverage.json`.
+4. `git add data/coverage.json && git commit -m "update coverage" && git push`.
+
+(To force a mode regardless of host — e.g. an internal editable mirror — set
+`editable: true` or `editable: false` in `js/config.js`.)
+
+> **Cache busting:** after editing `js/*.js` or `css/styles.css`, bump the `?v=`
+> number on the `<script>`/`<link>` tags in `index.html` so visitors fetch the
+> new version. (Editing only `data/coverage.json` needs no bump — it's fetched
+> with `no-cache`.)
+
 ## Customizing — edit `js/config.js`
 
 | What | Where |
@@ -71,7 +99,8 @@ branch root — every file here is static.
 | Name, tagline, logo text, footer | `brand` |
 | Black/purple theme colors | `theme` (CSS variables) |
 | Heatmap palettes (purple, red→green, …) | `heatmap.palettes` |
-| Quick scoring buttons | `scorePresets` |
+| Partial-status color | `heatmap.partial` |
+| Force edit / read-only | `editable` |
 | Top-right menus (your own links/actions) | `menus` |
 
 Menus accept either links — `{ label, href, external: true }` — or built-in

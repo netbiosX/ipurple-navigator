@@ -505,6 +505,14 @@ a:hover { text-decoration: underline; }
 .link-del { color: var(--danger); font-size: 17px; }
 .link-done { color: var(--purple-bright); }
 
+/* read-only popover (visitors) */
+.ro-status { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; margin: 10px 0 4px; }
+.ro-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(255,255,255,.25); flex-shrink: 0; }
+.ro-desc { max-height: 160px; }
+.ro-links { display: flex; flex-direction: column; gap: 7px; }
+.ro-links .link-anchor { padding: 8px; border: 1px solid var(--border); border-radius: 7px; background: var(--bg-cell); }
+.ro-links .link-anchor:hover { border-color: var(--purple-bright); text-decoration: none; }
+
 /* saved article shown as a clickable hyperlink */
 .link-row.link-view { flex-direction: row; align-items: center; gap: 6px; padding: 7px 8px; }
 .link-anchor {
