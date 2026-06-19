@@ -1,0 +1,44 @@
+name: Deploy iPurple.team Navigator to GitHub Pages
+
+# Deploys the static site on every push to main.
+# In your repo: Settings → Pages → Build and deployment → Source: GitHub Actions.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Optional: refresh the ATT&CK dataset at deploy time so the published
+      # site always tracks the latest MITRE data. Remove this step to ship the
+      # dataset committed in /data instead.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Rebuild ATT&CK dataset (latest MITRE data)
+        run: node scripts/build-data.mjs
+        continue-on-error: true
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4

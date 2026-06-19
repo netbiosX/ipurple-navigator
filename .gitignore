@@ -1,0 +1,5 @@
+# Large raw STIX bundle — regenerate with: node scripts/build-data.mjs
+raw/
+node_modules/
+.DS_Store
+Thumbs.db

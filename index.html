@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iPurple.team · ATT&CK Navigator</title>
+  <meta name="description" content="iPurple.team purple-team coverage matrix built on MITRE ATT&CK (Windows Enterprise)." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0a0f'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='%23a855f7' font-family='Arial' font-weight='bold'>iP</text></svg>" />
+  <link rel="stylesheet" href="css/styles.css?v=2" />
+</head>
+<body>
+  <!-- ===================== HEADER ===================== -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-logo" id="brandLogo">iP</div>
+      <div class="brand-text">
+        <div class="brand-name" id="brandName">iPurple.team</div>
+        <div class="brand-tagline" id="brandTagline">Purple Team Coverage Matrix</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search techniques (name, ID, description)…" autocomplete="off" />
+        <button class="search-clear" id="searchClear" title="Clear search" aria-label="Clear search">&times;</button>
+        <span class="search-count" id="searchCount"></span>
+      </div>
+      <button class="add-btn" id="addTechBtn" title="Add a custom technique or sub-technique">
+        <span class="plus">+</span> Technique
+      </button>
+      <nav class="menus" id="menus"><!-- built by app.js --></nav>
+    </div>
+  </header>
+
+  <!-- ===================== STATUS BAR ===================== -->
+  <div class="statusbar" id="statusbar">
+    <span id="layerMeta"></span>
+    <span class="legend" id="legend"><!-- gradient legend --></span>
+  </div>
+
+  <!-- ===================== MATRIX ===================== -->
+  <main id="matrix" class="matrix" aria-live="polite">
+    <div class="loading">Loading ATT&CK Windows matrix…</div>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="app-footer" id="appFooter"></footer>
+
+  <!-- ===================== TECHNIQUE POPOVER ===================== -->
+  <div class="popover-backdrop" id="popoverBackdrop" hidden></div>
+  <div class="popover" id="popover" hidden role="dialog" aria-modal="true"></div>
+
+  <!-- ===================== HELP MODAL ===================== -->
+  <div class="modal-backdrop" id="modalBackdrop" hidden></div>
+  <div class="modal" id="helpModal" hidden role="dialog" aria-modal="true"></div>
+
+  <!-- ===================== ADD / EDIT TECHNIQUE FORM ===================== -->
+  <div class="modal" id="formModal" hidden role="dialog" aria-modal="true"></div>
+
+  <!-- hidden file input for import -->
+  <input type="file" id="importFile" accept="application/json,.json" hidden />
+
+  <script src="js/config.js?v=3"></script>
+  <script src="js/app.js?v=3"></script>
+</body>
+</html>
