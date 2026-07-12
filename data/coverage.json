@@ -148,6 +148,219 @@
           "url": "https://ipurple.team/2025/11/18/lsass-dump-windows-error-reporting/"
         }
       ]
+    },
+    {
+      "techniqueID": "T1550.003",
+      "status": "partial",
+      "score": 50,
+      "color": "#7c3aed",
+      "links": [
+        {
+          "label": "https://ipurple.team/2025/07/28/badsuccessor/",
+          "url": "https://ipurple.team/2025/07/28/badsuccessor/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1053.005",
+      "status": "partial",
+      "score": 50,
+      "color": "#7c3aed",
+      "links": [
+        {
+          "label": "https://ipurple.team/2024/01/03/scheduled-task-tampering/",
+          "url": "https://ipurple.team/2024/01/03/scheduled-task-tampering/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1110.001",
+      "status": "partial",
+      "score": 50,
+      "color": "#7c3aed",
+      "links": [
+        {
+          "label": "Golden dMSA",
+          "url": "https://ipurple.team/2025/09/02/golden-dmsa/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1003.007",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "Credential Guard",
+          "url": "https://ipurple.team/2026/03/17/credential-guard/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1555.003",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "Browser Stored Credentials",
+          "url": "https://ipurple.team/2024/09/10/browser-stored-credentials/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1087.002",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "SharpHound Detection",
+          "url": "https://ipurple.team/2024/07/15/sharphound-detection/"
+        },
+        {
+          "label": "Active Directory Enumeration - ADWS",
+          "url": "https://ipurple.team/2025/08/12/active-directory-enumeration-adws/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1069.002",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "SharpHound Detection",
+          "url": "https://ipurple.team/2024/07/15/sharphound-detection/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1069.001",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "SharpHound Detection",
+          "url": "https://ipurple.team/2024/07/15/sharphound-detection/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1018",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "SharpHound Detection",
+          "url": "https://ipurple.team/2024/07/15/sharphound-detection/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1482",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "SharpHound Detection",
+          "url": "https://ipurple.team/2024/07/15/sharphound-detection/"
+        },
+        {
+          "label": "Active Directory Enumeration - ADWS",
+          "url": "https://ipurple.team/2025/08/12/active-directory-enumeration-adws/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1033",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "SharpHound Detection",
+          "url": "https://ipurple.team/2024/07/15/sharphound-detection/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1615",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "SharpHound Detection",
+          "url": "https://ipurple.team/2024/07/15/sharphound-detection/"
+        },
+        {
+          "label": "Active Directory Enumeration - ADWS",
+          "url": "https://ipurple.team/2025/08/12/active-directory-enumeration-adws/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1560.001",
+      "status": "partial",
+      "score": 50,
+      "color": "#7c3aed"
+    },
+    {
+      "techniqueID": "T1560",
+      "links": [
+        {
+          "label": "SharpHound Detection",
+          "url": "https://ipurple.team/2024/07/15/sharphound-detection/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1106",
+      "status": "partial",
+      "score": 50,
+      "color": "#7c3aed",
+      "links": [
+        {
+          "label": "SharpHound Detection",
+          "url": "https://ipurple.team/2024/07/15/sharphound-detection/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1087.001",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "Active Directory Enumeration - ADWS",
+          "url": "https://ipurple.team/2025/08/12/active-directory-enumeration-adws/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1543.003",
+      "status": "done",
+      "score": 100,
+      "color": "#43a047",
+      "links": [
+        {
+          "label": "Windows Service",
+          "url": "https://ipurple.team/2026/07/06/windows-service/"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1546.015",
+      "status": "partial",
+      "score": 50,
+      "color": "#7c3aed"
     }
   ],
   "customTechniques": [
@@ -225,6 +438,21 @@
       ],
       "url": "",
       "description": "WinGet, also known as Windows Package Manager, is Microsoft’s command-line for discovering, installing, upgrading, configuring, and removing applications on Windows. It is commonly used by Administrators and developers to automate software deployment and system setup. However, it can be abused to proxy execution and evade detection. Threat actors can execute arbitrary PowerShell scripts in the form of YAML files without invoking standard PowerShell processes, which endpoint detection and response technologies heavily monitor.",
+      "custom": true
+    },
+    {
+      "id": "T1003.007",
+      "name": "Credential Guard",
+      "tactics": [
+        "credential-access"
+      ],
+      "isSubtechnique": true,
+      "parent": "T1003",
+      "platforms": [
+        "Windows"
+      ],
+      "url": "",
+      "description": "",
       "custom": true
     }
   ]
